@@ -53,6 +53,16 @@ public class DatabaseManagement {
             System.out.println("Data deletion failed. (Book with ID " + bookId + " not found)");
         }
     }
+    public static void DBClose() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("Connection closed.");
+            } catch (SQLException e) {
+                System.err.println("Error closing the connection: " + e.getMessage());
+            }
+        }
+    }
 
 
 }

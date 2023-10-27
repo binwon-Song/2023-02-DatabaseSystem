@@ -7,5 +7,6 @@ public class Main {
         DatabaseManagement.DBSelect();
         DatabaseManagement.DBDelete(23);
         DatabaseManagement.DBSelect();
+        DatabaseManagement.DBClose();
     }
 }
