@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      cursor: pointer;
+      background-color: #ffffff;
+      color: #000000;
+      border-color: #000000;
+    }
+
+    .card-header:hover {
+      background-color: #f8f9fa;
+    }
+
+    .btn-link {
+      color: #000000;
+      text-decoration: none;
+    }
+
+    .btn-link:hover,
+    .btn-link:focus {
+      text-decoration: none; /* underline 없애기 */
+      color:coral;
+    }
+  </style>
+  <title>계층적 기록 목록</title>
+</head>
+<body>
+<div class="container">
+  <h2 class="text-center mb-4">계층적 기록 목록</h2>
+  <div id="recordAccordion">
+    <!-- 기록 목록이 여기에 동적으로 추가될 것입니다. -->
+  </div>
+
+  <!-- 기록물 추가 버튼 -->
+  <button class="btn btn-primary mt-4" id="addRecordBtn">기록물 추가</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+  var recordAccordion = document.getElementById('recordAccordion');
+
+  // 초기 가상으로 기록 데이터
+  var records = [
+    { title: "기록 1", content: "기록 내용 1", todos: ["TODO 1", "TODO 2"], subRecords: [
+        { title: "하위 기록 1-1", content: "하위 기록 내용 1-1", todos: ["TODO 1-1", "TODO 1-2"] },
+        { title: "하위 기록 1-2", content: "하위 기록 내용 1-2", todos: ["TODO 1-3", "TODO 1-4"] }
+      ] },
+    { title: "기록 2", content: "기록 내용 2", todos: ["TODO 3", "TODO 4"], subRecords: [
+        { title: "하위 기록 2-1", content: "하위 기록 내용 2-1", todos: ["TODO 2-1", "TODO 2-2"] },
+        { title: "하위 기록 2-2", content: "하위 기록 내용 2-2", todos: ["TODO 2-3", "TODO 2-4"] }
+      ] },
+    { title: "기록 3", content: "기록 내용 3", todos: ["TODO 5", "TODO 6"], subRecords: [
+        { title: "하위 기록 3-1", content: "하위 기록 내용 3-1", todos: ["TODO 3-1", "TODO 3-2"] },
+        { title: "하위 기록 3-2", content: "하위 기록 내용 3-2", todos: ["TODO 3-3", "TODO 3-4"] }
+      ] }
+  ];
+
+  function renderRecords(records, container) {
+    container.innerHTML = ''; // 기존 내용 비우기
+    records.forEach(function(record, index) {
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      var cardHeader = document.createElement('div');
+      cardHeader.className = 'card-header';
+      cardHeader.id = 'heading' + index;
+      cardHeader.innerHTML = `
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
+                            ${record.title}
+                        </button>
+                    </h5>
+                `;
+      card.appendChild(cardHeader);
+
+      var collapseDiv = document.createElement('div');
+      collapseDiv.id = 'collapse' + index;
+      collapseDiv.className = 'collapse';
+      collapseDiv.innerHTML = `
+                    <div class="card-body">
+                        ${record.subRecords ? renderSubRecords(record.subRecords) : ''}
+                    </div>
+                `;
+      card.appendChild(collapseDiv);
+
+      container.appendChild(card);
+    });
+  }
+
+  function renderSubRecords(subRecords) {
+    var subRecordsHtml = '<ul>';
+    subRecords.forEach(function(subRecord) {
+      subRecordsHtml += `<li>${subRecord.title}</li>`;
+    });
+    subRecordsHtml += '</ul>';
+    return subRecordsHtml;
+  }
+
+  // 초기 렌더링
+  renderRecords(records, recordAccordion);
+
+  // 기록물 추가 버튼 클릭 이벤트
+  var addRecordBtn = document.getElementById('addRecordBtn');
+  addRecordBtn.addEventListener('click', function() {
+    // 새로운 기록을 추가하고 다시 렌더링하는 로직을 추가해야 합니다.
+    // 이 부분은 실제 백엔드와의 통합이 필요하며, 여기서는 가상의 데이터로만 처리하겠습니다.
+    var newRecord = {
+      title: "새로운 기록",
+      content: "새로운 기록 내용",
+      todos: ["TODO 1", "TODO 2"],
+      subRecords: [
+        { title: "새로운 하위 기록 1", content: "새로운 하위 기록 내용 1", todos: ["TODO 1-1", "TODO 1-2"] },
+        { title: "새로운 하위 기록 2", content: "새로운 하위 기록 내용 2", todos: ["TODO 2-1", "TODO 2-2"] }
+      ]
+    };
+    records.push(newRecord);
+    renderRecords(records, recordAccordion);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <title>기록 관리</title>
+</head>
+<body>
+<div class="container">
+  <h2>기록 관리</h2>
+
+  <!-- Record creation form -->
+  <form>
+    <div class="form-group">
+      <label for="recordTitle">제목</label>
+      <input type="text" class="form-control" id="recordTitle" placeholder="제목을 입력하세요">
+    </div>
+    <div class="form-group">
+      <label for="recordContent">내용</label>
+      <textarea class="form-control" id="recordContent" rows="3" placeholder="내용을 입력하세요"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="recordTodo">TODO 리스트</label>
+      <div id="todoListContainer">
+        <!-- TODO 리스트가 동적으로 추가될 곳 -->
+      </div>
+      <button type="button" class="btn btn-success" onclick="addTodo()">+ TODO 추가</button>
+    </div>
+    <button type="submit" class="btn btn-primary">기록 생성</button>
+  </form>
+
+  <!-- Record list -->
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+  function addTodo() {
+    var todoListContainer = document.getElementById("todoListContainer");
+    var todoInput = document.createElement("div");
+    todoInput.className = "input-group mb-2";
+    todoInput.innerHTML = `
+                <input type="text" class="form-control" placeholder="TODO 항목을 입력하세요">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-danger" onclick="removeTodo(this)">삭제</button>
+                </div>
+            `;
+    todoListContainer.appendChild(todoInput);
+  }
+
+  function removeTodo(button) {
+    // 버튼의 부모 요소를 찾아 삭제
+    var todoInput = button.parentNode.parentNode;
+    todoInput.parentNode.removeChild(todoInput);
+  }
+</script>
+</body>
+</html>
