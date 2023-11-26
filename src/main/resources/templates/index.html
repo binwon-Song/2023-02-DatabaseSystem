@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,14 +12,14 @@
         <!-- 로그인 폼 -->
         <div class="col-md-6">
             <h2>로그인</h2>
-            <form>
+            <form th:action="@{/login}" method="post">
                 <div class="form-group">
                     <label for="loginUsername">아이디</label>
-                    <input type="text" class="form-control" id="loginUsername" placeholder="아이디를 입력하세요">
+                    <input type="text" class="form-control" id="loginUsername" placeholder="아이디를 입력하세요"  name="id">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">비밀번호</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="비밀번호를 입력하세요">
+                    <input type="password" class="form-control" id="loginPassword" placeholder="비밀번호를 입력하세요" name="passwd">
                 </div>
                 <button type="submit" class="btn btn-primary">로그인</button>
             </form>
@@ -28,18 +28,22 @@
         <!-- 회원가입 폼 -->
         <div class="col-md-6">
             <h2>회원가입</h2>
-            <form>
+            <form th:action="@{/signup}" method="post" th:object="${user}">
                 <div class="form-group">
-                    <label for="signupUsername">아이디</label>
-                    <input type="text" class="form-control" id="signupUsername" placeholder="아이디를 입력하세요">
+                    <label for="id">아이디</label>
+                    <input type="text" class="form-control" id="id" placeholder="아이디를 입력하세요" name="signupID" th:field="*{id}" required>
                 </div>
                 <div class="form-group">
-                    <label for="signupPassword">비밀번호</label>
-                    <input type="password" class="form-control" id="signupPassword" placeholder="비밀번호를 입력하세요">
+                    <label for="signupName">이름</label>
+                    <input type="text" class="form-control" id="signupName" placeholder="이름을 입력하세요" name="signupName" th:field="*{name}" required>
                 </div>
                 <div class="form-group">
-                    <label for="confirmPassword">비밀번호 확인</label>
-                    <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
+                    <label for="passwd">비밀번호</label>
+                    <input type="password" class="form-control" id="passwd" placeholder="비밀번호를 입력하세요" name="passwd" th:field="*{passwd}" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPasswd">비밀번호 확인</label>
+                    <input type="password" class="form-control" id="confirmPasswd" placeholder="비밀번호를 다시 입력하세요" name="confirmPasswd" required>
                 </div>
                 <button type="submit" class="btn btn-success">회원가입</button>
             </form>

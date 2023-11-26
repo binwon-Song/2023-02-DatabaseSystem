@@ -4,47 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-
-    .container {
-      margin-top: 50px;
-    }
-
-    .card {
-      margin-bottom: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-      cursor: pointer;
-      background-color: #ffffff;
-      color: #000000;
-      border-color: #000000;
-    }
-
-    .card-header:hover {
-      background-color: #f8f9fa;
-    }
-
-    .btn-link {
-      color: #000000;
-      text-decoration: none;
-    }
-
-    .btn-link:hover,
-    .btn-link:focus {
-      text-decoration: none; /* underline 없애기 */
-      color:coral;
-    }
-  </style>
-  <title>계층적 기록 목록</title>
+  <link rel="stylesheet" href="/css/DocList.css">
+  <title>기록 목록</title>
 </head>
 <body>
 <div class="container">
-  <h2 class="text-center mb-4">계층적 기록 목록</h2>
+  <h2 class="text-center mb-4">기록 목록</h2>
   <div id="recordAccordion">
     <!-- 기록 목록이 여기에 동적으로 추가될 것입니다. -->
   </div>
@@ -87,8 +52,9 @@
       cardHeader.id = 'heading' + index;
       cardHeader.innerHTML = `
                     <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
-                            ${record.title}
+                        <button href="#" class="btn btn-link text">${record.title}</button>
+                        <button class="btn btn-link toggle-btn" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
+                            <span class="toggle-btn">&#8595;</span>
                         </button>
                     </h5>
                 `;
@@ -137,6 +103,23 @@
     records.push(newRecord);
     renderRecords(records, recordAccordion);
   });
+
+  // Toggle 버튼 클릭 이벤트
+  recordAccordion.addEventListener('click', function(e) {
+    if (e.target.classList.contains('toggle-btn')) {
+      var arrowBtn = e.target;
+      toggleArrow(arrowBtn);
+    }
+  });
+  // 초기 렌더링 시에 'Toggle Sub Records' 버튼의 화살표를 '✖'로 설정
+  document.querySelectorAll('.toggle-btn').forEach(function (arrowBtn) {
+    arrowBtn.innerHTML = '↓';
+  });
+
+  function toggleArrow(arrowBtn) {
+    var arrow = arrowBtn.innerHTML;
+    arrowBtn.innerHTML = arrow === '✖' ? '↓' : '✖';
+  }
 </script>
 </body>
 </html>

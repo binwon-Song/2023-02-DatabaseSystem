@@ -6,9 +6,58 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <title>기록 관리</title>
 </head>
+<style>
+  h2 {
+    margin-top: 20px;
+  }
+
+  .form-group {
+    margin-top: 20px;
+  }
+
+  .form-group:nth-child(3) {
+    padding: 20px;
+    background: #e3e3e3;
+    border-radius: 30px;
+  }
+
+  .form-group label {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+  }
+
+  .form-control {
+    border-radius: 15px;
+  }
+
+  textarea.form-control {
+    resize: none;
+  }
+
+  .todo-container {
+    margin-top: 10px;
+  }
+
+  .todo-container .input-group {
+    margin-bottom: 10px;
+  }
+
+  .input-group-append .btn-danger {
+    border-radius: 15px;
+  }
+  #todo-header{
+    width:30%;
+  }
+  .custom-select{
+    color: #ff4f0b;
+  }
+
+</style>
 <body>
+
 <div class="container">
-  <h2>기록 관리</h2>
+  <h2>기록 추가</h2>
 
   <!-- Record creation form -->
   <form>
@@ -22,16 +71,13 @@
     </div>
     <div class="form-group">
       <label for="recordTodo">TODO 리스트</label>
-      <div id="todoListContainer">
-        <!-- TODO 리스트가 동적으로 추가될 곳 -->
+      <div id="todoListContainer" class="todo-container">
+
       </div>
       <button type="button" class="btn btn-success" onclick="addTodo()">+ TODO 추가</button>
     </div>
     <button type="submit" class="btn btn-primary">기록 생성</button>
   </form>
-
-  <!-- Record list -->
-
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -44,7 +90,19 @@
     var todoInput = document.createElement("div");
     todoInput.className = "input-group mb-2";
     todoInput.innerHTML = `
-                <input type="text" class="form-control" placeholder="TODO 항목을 입력하세요">
+                <input type="text" class="form-control" id="todo-header" placeholder="TODO 항목을 입력하세요">
+                <select class="custom-select text-center" id="prioritySelect">
+                  <option value="1">1 (가장 높음)</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10 (가장 낮음)</option>
+                </select>
                 <div class="input-group-append">
                     <button type="button" class="btn btn-danger" onclick="removeTodo(this)">삭제</button>
                 </div>
