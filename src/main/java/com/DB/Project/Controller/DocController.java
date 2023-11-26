@@ -1,30 +1,51 @@
 package com.DB.Project.Controller;
 
+import com.DB.Project.Service.DocService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.DB.Project.Entitiy.Doc;
+import java.util.List;
+
 
 @Controller
+@RequestMapping("/docs")
 public class DocController {
 
-    @RequestMapping(value = "/docs", method = RequestMethod.GET)
-    public String home() {
-        System.out.println("After Login ");
+    private final DocService docService;
+
+    @Autowired
+    public DocController(DocService docService) {
+        this.docService = docService;
+    }
+
+    @GetMapping
+    public String getAllDocs(Model model) {
+        List<Doc> docs = docService.getAllDocs();
+        model.addAttribute("docs", docs);
         return "DocList";
     }
-    @RequestMapping(value = "/docs", method = RequestMethod.POST)
+
+    @PostMapping
     public String addDoc() {
-        System.out.println("Add Login ");
-        return "DocList";
+        System.out.println("Add Doc ");
+        // Implement the logic to add a new document
+        return "redirect:/docs"; // Redirect to the list of documents
     }
-    @RequestMapping(value = "/docs", method = RequestMethod.DELETE)
-    public String deleteDoc() {
-        System.out.println("Delete Login ");
-        return "DocList";
+
+    @DeleteMapping("/{docID}")
+    public String deleteDoc(@PathVariable int docID) {
+        docService.deleteDoc(docID);
+        System.out.println("Delete Doc ");
+        return "redirect:/docs"; // Redirect to the list of documents
     }
-    @RequestMapping(value = "/docs", method = RequestMethod.PUT)
-    public String updateDoc() {
-        System.out.println("Update Login ");
-        return "DocList";
+
+    @PutMapping("/{docID}")
+    public String updateDoc(@PathVariable int docID, @ModelAttribute Doc updateDoc) {
+        System.out.println("Update Doc");
+        docService.updateDoc(docID, updateDoc);
+        return "redirect:/docs"; // Redirect to the list of documents
     }
 }
