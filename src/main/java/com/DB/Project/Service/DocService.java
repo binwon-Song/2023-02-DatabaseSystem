@@ -1,6 +1,8 @@
 package com.DB.Project.Service;
 
 import com.DB.Project.Entitiy.Doc;
+import com.DB.Project.Entitiy.Todo;
+import com.DB.Project.Entitiy.User;
 import com.DB.Project.Repository.DocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +24,13 @@ public class DocService {
         return docRepository.getDocById(docId);
     }
 
-    // 모든 Doc 조회
-    public List<Doc> getAllDocs() {
-        return docRepository.getAllDocs();
+    public List<Doc> getHierarchicalDocs(User loginUser) {
+        return docRepository.getHierarchicalDocs(loginUser);
     }
 
     // Doc 생성
-    public void createDoc(Doc doc) {
-        docRepository.createDoc(doc);
+    public void createDoc(Doc doc, List<Todo> todos,int parent) {
+        docRepository.createDoc(doc,todos,parent);
     }
 
     // Doc 수정
@@ -37,8 +38,16 @@ public class DocService {
         docRepository.updateDoc(doc);
     }
 
+
     // Doc 삭제
     public void deleteDoc(int docId) {
         docRepository.deleteDoc(docId);
+    }
+    public List<Doc> getAncestors(int docId) {
+        return docRepository.getAncestors(docId);
+    }
+
+    public List<Doc> getDescendants(int docId) {
+        return docRepository.getDescendants(docId);
     }
 }

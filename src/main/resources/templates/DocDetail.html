@@ -1,0 +1,91 @@
+<!-- DocDetail.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Document Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        /* Add your custom styles here */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        .list-group-item {
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0" th:text="${records.doc.header}"> </h3>
+                    <span th:text="${records.doc.modDate}"></span>
+
+                </div>
+                <div class="card-body">
+                    <p class="lead" th:text="${records.doc.content}"></p>
+                    <!-- Add more fields as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DocDetail.html -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Todo List</h3>
+            <div th:each="todo : ${records.todos}">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0"><strong>Header:</strong> <span th:text="${todo.header}"></span></p>
+                                <p class="mb-0"><strong>Priority:</strong> <span th:text="${todo.priority}"></span></p>
+                                <!-- Add more fields as needed -->
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="removeTodo(this)">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <button class="btn btn-primary mt-4 center" id="addRecordBtn" onclick="navigateToAddRecord()">기록물 추가</button>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function navigateToAddRecord(){
+        const docId=[[${records.doc.docId}]];
+        let newUrl = '/docs/' + docId + '/add';
+        console.log(newUrl);
+        console.log(docId);
+        window.location.href = newUrl;
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

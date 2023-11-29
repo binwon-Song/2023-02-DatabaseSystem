@@ -1,8 +1,11 @@
 package com.DB.Project.Controller;
 
 import com.DB.Project.Entitiy.User;
+import com.DB.Project.MyConfig.SessionConst;
 import com.DB.Project.Repository.UserRepository;
 import com.DB.Project.Service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,15 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Getter
 @Setter
 @ToString
 @Controller
+@SessionAttributes("loginUser")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -40,8 +41,15 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@RequestParam String id, @RequestParam String passwd, Model model) {
+    public String login(@RequestParam String id, @RequestParam String passwd, Model model, HttpServletRequest httpServletRequest) {
+        // Session이 있으면 가져오고 없으면 Session을 생성해서 return (default = true)
+        HttpSession session = httpServletRequest.getSession(false);
+        if (session ==null){
+            session = httpServletRequest.getSession(true);
+        }
         if (userService.validateUser(id, passwd)) {
+            User loginUser = userService.getUserByID(id);
+            session.setAttribute(SessionConst.loginUser,loginUser);
             return "redirect:/docs";
         } else {
             model.addAttribute("error", "Invalid credentials");
@@ -49,9 +57,20 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(HttpServletRequest req) {
+        HttpSession session= req.getSession(false);
+        if(session !=null){
+            session.invalidate();
+        }
+        return "redirect:/";
+    }
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public String signup(@ModelAttribute User user) {
+    public String signup(@ModelAttribute User user,Model model) {
         userService.createUser(user);
-        return "redirect:/docs";
+        // 로그인 작업 추가
+        User loginUser = userService.getUserByID(user.getId());
+        model.addAttribute("loginUser", loginUser);
+        return "redirect:/";
     }
 }

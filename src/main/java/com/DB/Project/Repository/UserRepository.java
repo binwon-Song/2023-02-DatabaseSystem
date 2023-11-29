@@ -18,7 +18,7 @@ public class UserRepository {
         String sql = "SELECT * FROM Users WHERE ID = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, (resultSet, rowNum) -> {
             User user = new User();
-            user.setUserID(resultSet.getLong("UserID"));
+            user.setUserID(resultSet.getInt("UserID"));
             user.setName(resultSet.getString("Name"));
             user.setId(resultSet.getString("ID"));
             user.setPasswd(resultSet.getString("Passwd"));

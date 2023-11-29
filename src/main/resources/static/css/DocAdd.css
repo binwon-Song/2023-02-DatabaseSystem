@@ -1,0 +1,45 @@
+h2 {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-top: 20px;
+}
+
+.form-group:nth-child(3) {
+    padding: 20px;
+    background: #e3e3e3;
+    border-radius: 30px;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 15px;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+.todo-container {
+    margin-top: 10px;
+}
+
+.todo-container .input-group {
+    margin-bottom: 10px;
+}
+
+.input-group-append .btn-danger {
+    border-radius: 15px;
+}
+#todo-header{
+    width:30%;
+}
+.custom-select{
+    color: #ff4f0b;
+}

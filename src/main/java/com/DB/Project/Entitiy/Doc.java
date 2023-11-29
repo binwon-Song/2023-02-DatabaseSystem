@@ -2,8 +2,6 @@ package com.DB.Project.Entitiy;
 
 import lombok.*;
 
-import java.sql.Date;
-
 @Getter
 @Setter
 @ToString
@@ -12,9 +10,10 @@ import java.sql.Date;
 public class Doc {
     private int docId;
     private String writer;
-    private Date startDate;
-    private Date modDate;
+    private String modDate;
     private String content;
     private String header;
     private int userId;
+
+
 }
