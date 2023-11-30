@@ -33,9 +33,11 @@ public class DocRepository {
 
         String query = "SELECT D.* FROM Doc D " +
                 "JOIN ClouserTable C ON D.DocID = C.DescendantDocID " +
-                "WHERE D.UserID = ? " + // Add a condition to filter by user ID
-                "ORDER BY C.Depth";
-        return jdbcTemplate.query(query, new Object[]{loginUser.getUserID()}, this::mapRowToDoc);
+                "WHERE D.UserID = ? AND C.AncestorDocID=? AND C.Depth=1";
+
+        Integer userid=loginUser.getUserID();
+
+        return jdbcTemplate.query(query, new Object[]{userid,userid}, this::mapRowToDoc);
     }
 
 
@@ -44,23 +46,21 @@ public class DocRepository {
         String query = "INSERT INTO Doc (Writer, ModDate, Content, Header, UserID) VALUES (?, ?, ?, ?, ?)";
         String todoQuery = "INSERT INTO TODOList (Prior, Header, DocID) VALUES (?, ?, ?)";
         String closureQuery = "" +
-                "INSERT INTO ClouserTable (AncestorDocID, DescendantDocID) " +
-                "SELECT C.AncestorDocID, ? " +
+                "INSERT INTO ClouserTable (AncestorDocID, DescendantDocID,Depth) " +
+                "SELECT C.AncestorDocID, ?,C.Depth+1 " +
                 "FROM ClouserTable AS C " +
                 "WHERE C.DescendantDocID=? " +
                 "UNION ALL " +
-                "SELECT ?,?"; // insert num, parent, insert, insert
+                "SELECT ?,?,0"; // insert num, parent, insert, insert
 
 
         // Execute the insert query
+        Integer userid=doc.getUserId();
         jdbcTemplate.update(query, doc.getWriter(), doc.getModDate(), doc.getContent(), doc.getHeader(), doc.getUserId());
-
-        // Retrieve the generated DocID
         int docId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
 
         // Set the DocID in the Doc object
         doc.setDocId(docId);
-
         // Insert TODOs with the retrieved DocID
         if (todos != null) {
             for (Todo todo : todos) {
@@ -68,8 +68,7 @@ public class DocRepository {
             }
         }
 
-        jdbcTemplate.update(closureQuery, docId, parent, docId);
-
+        jdbcTemplate.update(closureQuery, docId, parent, docId,docId);
     }
 
 
@@ -94,10 +93,10 @@ public class DocRepository {
     // 특정 문서의 자손 문서 가져오기
     public List<Doc> getDescendants(int docId) {
         String query = "SELECT d.* FROM Doc d " +
-                "JOIN ClouserTable ct ON d.DocID = ct.DescendantDocID " +
-                "WHERE ct.AncestorDocID = ?";
+                "JOIN ClouserTable C ON d.DocID = C.DescendantDocID " +
+                "WHERE C.AncestorDocID = ? AND d.DocID <> ?";
 
-        return jdbcTemplate.query(query, new Object[]{docId}, this::mapRowToDoc);
+        return jdbcTemplate.query(query, new Object[]{docId,docId}, this::mapRowToDoc);
     }
 
     private Doc mapRowToDoc(ResultSet rs, int rowNum) throws SQLException {

@@ -10,7 +10,7 @@
 <body>
 <div class="container">
   <div class="text-right mb-4">
-    <p th:text="${records[0].writer}">sd</p>
+    <p th:text="${user.name}"></p>
     <a href="/logout">logout</a>
   </div>
   <h2 class="text-center mb-4">기록 목록</h2>
@@ -24,86 +24,75 @@
 
 
           <button class="btn btn-link toggle-btn" data-toggle="collapse" th:data-target="'#collapse' + ${record.docId}"
-                  aria-expanded="false" th:aria-controls="'collapse' + ${record.docId}">
+                  aria-expanded="false" th:aria-controls="'collapse' + ${record.docId}" >
             <span class="toggle-btn">&#8595;</span>
           </button>
         </h5>
       </div>
 
-<!--      <div th:id="'collapse' + ${record.docId}" class="collapse" th:class="${record.subRecords ? 'show' : ''}">-->
+      <div th:id="'collapse' + ${record.docId}" class="collapse">
         <div class="card-body">
           <ul>
-<!--            <li th:each="subRecord : ${record.subRecords}" th:text="${subRecord.header}"></li>-->
           </ul>
         </div>
       </div>
     </div>
-  <button class="btn btn-primary mt-4" id="addRecordBtn" onclick="location.href='/docs/add'">기록물 추가</button>
-
   </div>
-
+  <button class="btn btn-primary mt-4" id="addRecordBtn" onclick="location.href='/docs/add'">기록물 추가</button>
   <!-- 기록물 추가 버튼 -->
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-<script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
   var recordAccordion = document.getElementById('recordAccordion');
 
-  function renderRecords(records, container) {
-    container.innerHTML = ''; // 기존 내용 비우기
-    records.forEach(function(record, index) {
-      var card = document.createElement('div');
-      card.className = 'card';
+  function renderSubRecords(docId, subRecords) {
+    // Find the element with the matching docId
+    var collapseElement = document.getElementById('collapse' + docId);
 
-      var cardHeader = document.createElement('div');
-      cardHeader.className = 'card-header';
-      cardHeader.id = 'heading' + index;
-      cardHeader.innerHTML = `
-                    <h5 class="mb-0">
-                        <a href="DocDetail.html?index=${index}" class="btn btn-link">
-                            ${record.title}
-                        </a>
-                        <button class="btn btn-link toggle-btn" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
-                            <span class="toggle-btn">&#8595;</span>
-                        </button>
-                    </h5>
-                `;
-      card.appendChild(cardHeader);
+    // Clear existing content
+    var ulElement = collapseElement.querySelector('ul');
+    ulElement.innerHTML = '';
 
-      var collapseDiv = document.createElement('div');
-      collapseDiv.id = 'collapse' + index;
-      collapseDiv.className = 'collapse';
-      collapseDiv.innerHTML = `
-                    <div class="card-body">
-                        ${record.subRecords ? renderSubRecords(record.subRecords) : ''}
-                    </div>
-                `;
-      card.appendChild(collapseDiv);
-
-      container.appendChild(card);
-    });
-  }
-
-  function renderSubRecords(subRecords) {
-    var subRecordsHtml = '<ul>';
+    // Append new subRecords
     subRecords.forEach(function(subRecord) {
-      subRecordsHtml += `<li>${subRecord.title}</li>`;
+      var listItem = document.createElement('li');
+      var anchor = document.createElement('a');
+      anchor.href = '/docs/' + subRecord.docId;
+      anchor.className = 'btn btn-link text';
+      anchor.textContent = subRecord.header;
+
+      listItem.appendChild(anchor);
+      ulElement.appendChild(listItem);
     });
-    subRecordsHtml += '</ul>';
-    return subRecordsHtml;
   }
 
-  // 초기 렌더링
-  renderRecords(records, recordAccordion);
 
   // Toggle 버튼 클릭 이벤트
   recordAccordion.addEventListener('click', function(e) {
     if (e.target.classList.contains('toggle-btn')) {
       var arrowBtn = e.target;
       toggleArrow(arrowBtn);
+
+      var dataTarget = arrowBtn.getAttribute('data-target');
+      var docid = extractDocId(dataTarget);
+
+      $.ajax({
+        url: '/docs/' + docid + '/descendants',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+          console.log(response);
+          renderSubRecords(docid,response)
+        },
+        error: function(error) {
+          console.error('Error fetching descendants:', error);
+        }
+      });
     }
   });
   // 초기 렌더링 시에 'Toggle Sub Records' 버튼의 화살표를 '✖'로 설정
@@ -115,6 +104,11 @@
     var arrow = arrowBtn.innerHTML;
     arrowBtn.innerHTML = arrow === '✖' ? '↓' : '✖';
   }
+  function extractDocId(dataTarget) {
+    // Assuming dataTarget is in the format '#collapse123', extracting the numeric part
+    return dataTarget.replace('#collapse', '');
+  }
+  /*]]>*/
 </script>
 </body>
 </html>

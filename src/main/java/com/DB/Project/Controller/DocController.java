@@ -38,6 +38,7 @@ public class DocController {
         User loginMember=(User)session.getAttribute(SessionConst.loginUser);
         List<Doc> hierarchicalDocs = docService.getHierarchicalDocs(loginMember);
         model.addAttribute("records", hierarchicalDocs);
+        model.addAttribute("user",loginMember);
         return "DocList";
     }
 
@@ -57,12 +58,11 @@ public class DocController {
 
         List<Todo> todos = docWithTodo.getTodos();
 
-        Doc doc = new Doc();
-        doc=docWithTodo.getDoc();
+        Doc doc=docWithTodo.getDoc();
         doc.setWriter(loginMember.getName());
         doc.setModDate(formattedDate);
         doc.setUserId(loginMember.getUserID());
-        docService.createDoc(doc, todos,0);
+        docService.createDoc(doc, todos, loginMember.getUserID());
         return "redirect:/docs";
     }
 
@@ -89,7 +89,7 @@ public class DocController {
         model.addAttribute("records",docTodo);
         return "/DocDetail"; // Redirect to the list of documents
     }
-    @GetMapping("/{docId}/ancestors")
+    @GetMapping("/ancestors")
     public String getAncestors(@PathVariable int docId, Model model) {
         List<Doc> ancestors = docService.getAncestors(docId);
         model.addAttribute("ancestors", ancestors);
@@ -97,12 +97,12 @@ public class DocController {
         return "AncestorsList";
     }
 
-    @GetMapping("/{docId}/descendants")
-    public String getDescendants(@PathVariable int docId, Model model) {
-        List<Doc> descendants = docService.getDescendants(docId);
-        model.addAttribute("descendants", descendants);
-        model.addAttribute("docId", docId); // Add docId to the model for reference in the template
-        return "DescendantsList";
+    @GetMapping(value = "/{docId}/descendants", produces = "application/json")
+    @ResponseBody
+    public List<Doc> getDescendants(@PathVariable("docId") int docId,Model model) {
+        List<Doc> child=docService.getDescendants(docId);
+        model.addAttribute("subRecords",child);
+        return child;
     }
 
     @GetMapping("/{docId}/add")
@@ -115,18 +115,15 @@ public class DocController {
 
     // 기록 추가 폼에서 데이터를 받아 기록 추가
     @PostMapping("/{docId}/add")
-    public String addChildDoc(@PathVariable int parent,@ModelAttribute("docWithTodo") DocWithTodo docWithTodo, HttpServletRequest request) {
+    public String addChildDoc(@PathVariable("docId") int parent,@ModelAttribute("docWithTodo") DocWithTodo docWithTodo, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         User loginMember = (User) session.getAttribute(SessionConst.loginUser);
         LocalDate currentDate = LocalDate.now();
         String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         List<Todo> todos = docWithTodo.getTodos();
-        for (Todo todo : todos) {
-            System.out.println("todo header : " + todo.getHeader());
-        }
-        Doc doc=new Doc();
-        doc=docWithTodo.getDoc();
+
+        Doc doc=docWithTodo.getDoc();
         doc.setWriter(loginMember.getName());
         doc.setModDate(formattedDate);
         doc.setUserId(loginMember.getUserID());
