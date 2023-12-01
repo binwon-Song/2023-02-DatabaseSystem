@@ -34,20 +34,26 @@ public class DocService {
     }
 
     // Doc 수정
-    public void updateDoc(int docID, Doc doc) {
-        docRepository.updateDoc(doc);
+    public void updateDoc(Doc doc, List<Todo> todos) {
+        docRepository.updateDoc(doc,todos);
     }
-
 
     // Doc 삭제
     public void deleteDoc(int docId) {
         docRepository.deleteDoc(docId);
     }
-    public List<Doc> getAncestors(int docId) {
-        return docRepository.getAncestors(docId);
+    public void markDoc(int userId,int docId) {
+        docRepository.markDoc(userId,docId);
     }
 
     public List<Doc> getDescendants(int docId) {
         return docRepository.getDescendants(docId);
+    }
+
+    public void deleteMark(int userId,int docId){
+        docRepository.deleteMark(userId,docId);
+    }
+    public List<Doc> getBookmark(int userId){
+        return docRepository.getBookmark(userId);
     }
 }

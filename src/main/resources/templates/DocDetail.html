@@ -31,6 +31,9 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
+            <div class="text-right share">
+                <button class="btn btn-info text-right" onclick="docShare();" data-toggle="modal" data-target="#shareModal">공유하기</button>
+            </div>
             <div class="card">
                 <div class="card-header">
                     <h3 class="mb-0" th:text="${records.doc.header}"> </h3>
@@ -58,7 +61,6 @@
                                 <p class="mb-0"><strong>Priority:</strong> <span th:text="${todo.priority}"></span></p>
                                 <!-- Add more fields as needed -->
                             </div>
-                            <button type="button" class="btn btn-danger" onclick="removeTodo(this)">Remove</button>
                         </div>
                     </div>
                 </div>
@@ -67,22 +69,91 @@
     </div>
     <div class="text-center">
         <button class="btn btn-primary mt-4 center" id="addRecordBtn" onclick="navigateToAddRecord()">기록물 추가</button>
+        <button class="btn btn-warning mt-4" onclick="editRecord()">수정</button>
+        <button class="btn btn-info mt-4" onclick="markRecord()">북마크</button>
+        <button class="btn btn-danger mt-4" onclick="removeRecord()">삭제</button>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="shareModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">공유하기</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/share/docId">
+                        <div class="form-group">
+                            <label for="userId">사용자 아이디:</label>
+                            <input type="text" class="form-control" id="userId" placeholder="사용자 아이디를 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="role">역할 선택:</label>
+                            <select class="form-control" id="role">
+                                <option value="edit">편집자</option>
+                                <option value="view">뷰어</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary">공유하기</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
+    var docId = [[${records.doc.docId}]];
     function navigateToAddRecord(){
-        const docId=[[${records.doc.docId}]];
         let newUrl = '/docs/' + docId + '/add';
-        console.log(newUrl);
-        console.log(docId);
         window.location.href = newUrl;
+    }
+    function editRecord() {
+        // Handle edit record button click
+        let newUrl = '/docs/mod/' + docId ;
+        window.location.href = newUrl;
+        // Implement your edit record logic here
+    }
+
+    function removeRecord() {
+        // Handle remove record button click
+        let newUrl = '/docs/' + docId;
+        $.ajax({
+            type: 'DELETE',
+            url: newUrl,
+            success: function(response) {
+                alert("Record removed successfully")
+                window.location.href = "/docs";
+            },
+            error: function(error) {
+                console.error('Error removing record:', error);
+            }
+        });
+    }
+    function markRecord(){
+        let newUrl='/docs/'+docId+'/mark'
+        $.ajax({
+            type: 'POST', // Change to 'POST' or other HTTP method if needed
+            url: newUrl,
+            success: function(response) {
+                // Implement your success logic here
+                alert('Record marked successfully');
+            },
+            error: function(error) {
+                console.error('Error marking record:', error);
+            }
+        });
     }
     /*]]>*/
 </script>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/DocList.css">
+  <title>기록 목록</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light" >
+  <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link link-info" href="/docs/mark">북마크 목록</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-info" href="/docs/share">공유문서함</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+<div class="text-right mb-4 text-center" style="margin-left: 50%">
+  <p th:text="${user.name}">sd</p>
+  <a href="/logout">logout</a>
+</div>
+
+<div class="container">
+  <h2 class="text-center mb-4">북마크 목록</h2>
+  <div id="recordAccordion" th:each="record : ${records}">
+    <!-- 기록 목록이 여기에 동적으로 추가될 것입니다. -->
+    <div class="card">
+      <div class="card-header" th:id="'heading' + ${record.docId}">
+        <h5 class="mb-0">
+          <!-- 예시 URL 템플릿 -->
+          <div class="d-flex justify-content-between">
+            <a th:href="@{/docs/{id}(id=${record.docId})}" class="btn btn-link text" th:text="${record.header}">test</a>
+            <button class="btn btn-danger" th:onclick="|deleteMark(${record.docId})|">북마크 제거</button>
+
+          </div>
+
+
+        </h5>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  function deleteMark(docId)
+  {
+    let newUrl="/docs/mark/"+docId
+    $.ajax({
+      type: 'DELETE',
+      url: newUrl,
+      success: function(response) {
+        alert("Record bookmark successfully")
+        window.location.href = "/docs/mark";
+      },
+      error: function(error) {
+        console.error('Error removing record:', error);
+      }
+    });
+  }
+  /*]]>*/
+</script>
+</body>
+</html>

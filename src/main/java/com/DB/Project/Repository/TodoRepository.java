@@ -22,6 +22,10 @@ public class TodoRepository {
         String query = "SELECT * FROM TODOList WHERE DocID = ?";
         return jdbcTemplate.query(query, new Object[]{docId}, this::mapRowToTodo);
     }
+    public List<Todo> getTodoByUserId(int userId) {
+        String query = "SELECT * FROM TODOList WHERE UserID = ?";
+        return jdbcTemplate.query(query, new Object[]{userId}, this::mapRowToTodo);
+    }
 
 
     private Todo mapRowToTodo(ResultSet rs, int rowNum) throws SQLException {

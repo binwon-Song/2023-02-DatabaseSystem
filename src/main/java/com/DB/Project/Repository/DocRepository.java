@@ -72,9 +72,12 @@ public class DocRepository {
     }
 
 
-    public void updateDoc(Doc doc) {
-        String query = "UPDATE Doc SET Writer = ?, StartDate = ?, ModDate = ?, Content = ?, Header = ?, UserID = ? WHERE DocID = ?";
-        jdbcTemplate.update(query, doc.getWriter(), doc.getModDate(), doc.getContent(), doc.getHeader(), doc.getUserId(), doc.getDocId());
+    public void updateDoc(Doc doc,List<Todo> todos) {
+        String docQuery = "UPDATE Doc SET Writer = ?,ModDate = ?, Content = ?, Header = ?  WHERE DocID = ?";
+        String todoQuery = "UPDATE TODOList SET Prior=?, Header=? WHERE TodoID=?";
+        jdbcTemplate.update(docQuery, doc.getWriter(), doc.getModDate(), doc.getContent(), doc.getHeader(), doc.getDocId());
+        for (Todo todo :todos)
+            jdbcTemplate.update(todoQuery, todo.getPriority(),todo.getHeader(),todo.getTodoID());
     }
 
     public void deleteDoc(int docId) {
@@ -98,7 +101,25 @@ public class DocRepository {
 
         return jdbcTemplate.query(query, new Object[]{docId,docId}, this::mapRowToDoc);
     }
+    public void markDoc(int userId,int docId)
+    {
+        String query="INSERT INTO Bookmark(DocID,UserID) VALUES (?,?)";
+        jdbcTemplate.update(query,docId,userId);
+    }
 
+    public void deleteMark(int userId,int docId){
+        String query="DELETE FROM Bookmark WHERE UserID=? AND DocID=?";
+        jdbcTemplate.update(query,userId,docId);
+    }
+
+    public List<Doc> getBookmark(int userId){
+        String query = "SELECT D.* " +
+                "FROM Doc D " +
+                "JOIN Bookmark B ON D.DocID = B.DocID " +
+                "WHERE B.UserID = ?";
+
+        return jdbcTemplate.query(query, new Object[]{userId}, this::mapRowToDoc);
+    }
     private Doc mapRowToDoc(ResultSet rs, int rowNum) throws SQLException {
         Doc doc = new Doc(
                 rs.getInt("DocID"),
@@ -108,9 +129,6 @@ public class DocRepository {
                 rs.getString("Header"),
                 rs.getInt("UserID")
         );
-
-
-
         return doc;
     }
 }

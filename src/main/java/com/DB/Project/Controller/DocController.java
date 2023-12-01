@@ -67,21 +67,36 @@ public class DocController {
     }
 
     @DeleteMapping("/{docID}")
+    @ResponseBody
     public String deleteDoc(@PathVariable int docID) {
         docService.deleteDoc(docID);
         System.out.println("Delete Doc ");
         return "redirect:/docs"; // Redirect to the list of documents
     }
 
+
     @PutMapping("/{docID}")
-    public String updateDoc(@PathVariable int docID, @ModelAttribute Doc updateDoc) {
+    public String updateDoc(@PathVariable int docID, @ModelAttribute DocWithTodo docWithTodo, HttpServletRequest request) {
         System.out.println("Update Doc");
-        docService.updateDoc(docID, updateDoc);
+        HttpSession session = request.getSession(false);
+        User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+        LocalDate currentDate = LocalDate.now();
+        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        List<Todo> todos = docWithTodo.getTodos();
+
+        Doc doc=docWithTodo.getDoc();
+        doc.setWriter(loginMember.getName());
+        doc.setModDate(formattedDate);
+        doc.setUserId(loginMember.getUserID());
+
+        docService.createDoc(doc, todos, loginMember.getUserID());
+        docService.updateDoc(doc,todos);
         return "redirect:/docs"; // Redirect to the list of documents
     }
 
     @GetMapping("/{docID}")
-    public String detailDoc(@PathVariable int docID,@ModelAttribute Doc detailDoc,Model model){
+    public String detailDoc(@PathVariable("docID") int docID,@ModelAttribute Doc detailDoc,Model model){
         System.out.println("Detail Page");
         Doc doc=docService.getDocById(docID);
         List<Todo> todo= todoService.getTodoByDocId(docID);
@@ -89,12 +104,22 @@ public class DocController {
         model.addAttribute("records",docTodo);
         return "/DocDetail"; // Redirect to the list of documents
     }
-    @GetMapping("/ancestors")
-    public String getAncestors(@PathVariable int docId, Model model) {
-        List<Doc> ancestors = docService.getAncestors(docId);
-        model.addAttribute("ancestors", ancestors);
-        model.addAttribute("docId", docId); // Add docId to the model for reference in the template
-        return "AncestorsList";
+    @GetMapping("/mod/{docID}")
+    public String modDoc(@PathVariable("docID") int docID,Model model,HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+        Doc doc=docService.getDocById(docID);
+        List<Todo> todo= todoService.getTodoByDocId(docID);
+        DocWithTodo docTodo=new DocWithTodo(doc,todo);
+
+        LocalDate currentDate = LocalDate.now();
+        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        model.addAttribute("records",docTodo);
+        doc.setWriter(loginMember.getName());
+        doc.setModDate(formattedDate);
+        doc.setUserId(loginMember.getUserID());
+        return "DocMod";
     }
 
     @GetMapping(value = "/{docId}/descendants", produces = "application/json")
@@ -130,4 +155,48 @@ public class DocController {
         docService.createDoc(doc, todos,parent);
         return "redirect:/docs";
     }
+
+    @GetMapping("/mark")
+    public String getMarkDoc(HttpServletRequest request,Model model)
+    {
+        HttpSession session = request.getSession(false);
+        User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+
+        List<Doc> markDoc=docService.getBookmark(loginMember.getUserID());
+
+        model.addAttribute("records",markDoc);
+        model.addAttribute("user",loginMember);
+        return "DocMark";
+    }
+
+    @PostMapping("/{docId}/mark")
+    @ResponseBody
+    public void markDoc(@PathVariable("docId") int docId,HttpServletRequest request)
+    {
+        HttpSession session = request.getSession(false);
+        User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+        docService.markDoc(loginMember.getUserID(), docId);
+    }
+    @DeleteMapping("/mark/{docId}")
+    @ResponseBody
+    public void deleteMarkDoc(@PathVariable("docId") Integer docId,HttpServletRequest request)
+    {
+        HttpSession session = request.getSession(false);
+        User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+        docService.deleteMark(loginMember.getUserID(),docId);
+    }
+
+    @GetMapping("/todos")
+    public String getTodos(HttpServletRequest request,Model model)
+    {
+        HttpSession session = request.getSession(false);
+        User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+        List<Todo> todos=todoService.getTodoByUserId(loginMember.getUserID());
+        model.addAttribute("todos",todos);
+        return "TodoList";
+
+    }
+
+
+
 }

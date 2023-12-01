@@ -20,4 +20,7 @@ public class TodoService {
     public List<Todo> getTodoByDocId(int docId) {
         return todoRepository.getTodoByDocId(docId);
     }
+    public List<Todo> getTodoByUserId(int userId) {
+        return todoRepository.getTodoByUserId(userId);
+    }
 }
