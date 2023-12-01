@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/DocList.css">
+  <title>공유 문서함</title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light" >
+  <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link link-info" href="/docs/mark">북마크 목록</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-info" href="/docs/shares">공유 문서함</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+<div class="text-right mb-4 text-center" style="margin-left: 50%">
+  <p th:text="${user.name}">sd</p>
+  <a href="/logout">logout</a>
+</div>
+
+<div class="container">
+
+  <h2 class="text-center mb-4">공유된 기록 목록</h2>
+  <div id="recordAccordion" th:each="record : ${records}">
+    <!-- 기록 목록이 여기에 동적으로 추가될 것입니다. -->
+    <div class="card">
+      <div class="card-header" th:id="'heading' + ${record.docId}">
+        <h5 class="mb-0">
+          <!-- 예시 URL 템플릿 -->
+          <a th:href="@{/docs/{id}(id=${record.docId})}" class="btn btn-link text" th:text="${record.header}"></a>
+
+        </h5>
+      </div>
+
+      <div th:id="'collapse' + ${record.docId}" class="collapse">
+        <div class="card-body">
+          <ul>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary mt-4" id="addRecordBtn" onclick="location.href='/docs/add'">기록물 추가</button>
+  <!-- 기록물 추가 버튼 -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+
+  function extractDocId(dataTarget) {
+    // Assuming dataTarget is in the format '#collapse123', extracting the numeric part
+    return dataTarget.replace('#collapse', '');
+  }
+  /*]]>*/
+</script>
+</body>
+</html>

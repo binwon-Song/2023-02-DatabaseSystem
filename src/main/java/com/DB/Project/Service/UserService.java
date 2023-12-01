@@ -19,8 +19,10 @@ public class UserService {
     }
 
     public User getUserByID(String id) {
-        System.out.println(id);
         return userRepository.findByID(id);
+    }
+    public User getUserByIntID(Integer id){
+        return userRepository.findByIntID(id);
     }
 
     public User createUser(User user) {
