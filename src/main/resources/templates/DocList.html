@@ -16,7 +16,7 @@
         <a class="nav-link link-info" href="/docs/mark">북마크 목록</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link link-info" href="/docs/shares">공유 문서함</a>
+        <a class="nav-link link-info" href="/shares">공유 문서함</a>
       </li>
 
     </ul>
@@ -35,12 +35,9 @@
     <div class="card">
       <div class="card-header" th:id="'heading' + ${record.docId}">
         <h5 class="mb-0">
-          <!-- 예시 URL 템플릿 -->
           <a th:href="@{/docs/{id}(id=${record.docId})}" class="btn btn-link text" th:text="${record.header}"></a>
-
-
           <button class="btn btn-link toggle-btn" data-toggle="collapse" th:data-target="'#collapse' + ${record.docId}"
-                  aria-expanded="false" th:aria-controls="'collapse' + ${record.docId}" >
+                  aria-expanded="false" th:aria-controls="'collapse' + ${record.docId}" onclick="showSub(event)">
             <span class="toggle-btn">&#8595;</span>
           </button>
         </h5>
@@ -64,9 +61,12 @@
 
 <script th:inline="javascript">
   /*<![CDATA[*/
+
+
   var recordAccordion = document.getElementById('recordAccordion');
 
   function renderSubRecords(docId, subRecords) {
+
     // Find the element with the matching docId
     var collapseElement = document.getElementById('collapse' + docId);
 
@@ -89,35 +89,56 @@
 
 
   // Toggle 버튼 클릭 이벤트
-  recordAccordion.addEventListener('click', function(e) {
-    if (e.target.classList.contains('toggle-btn')) {
-      var arrowBtn = e.target;
-      toggleArrow(arrowBtn);
+  function showSub(event) {
+    let arrowBtn = event.currentTarget;
+    console.log(arrowBtn);
+    toggleArrow(arrowBtn);
 
-      var dataTarget = arrowBtn.getAttribute('data-target');
-      var docid = extractDocId(dataTarget);
+    let dataTarget = arrowBtn.getAttribute('data-target');
+    let docid = extractDocId(dataTarget);
 
-      $.ajax({
-        url: '/docs/' + docid + '/descendants',
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-          console.log(response);
-          renderSubRecords(docid,response)
-        },
-        error: function(error) {
-          console.error('Error fetching descendants:', error);
-        }
-      });
-    }
-  });
+    $.ajax({
+      url: '/docs/' + docid + '/descendants',
+      type: 'GET',
+      dataType: 'json',
+      success: function(response) {
+        console.log(response);
+        renderSubRecords(docid, response);
+      },
+      error: function(error) {
+        console.error('Error fetching descendants:', error);
+      }
+    });
+  }
+  // recordAccordion.addEventListener('click', function(e) {
+  //   if (e.target.classList.contains('toggle-btn')) {
+  //     let arrowBtn = e.target;
+  //     toggleArrow(arrowBtn);
+  //
+  //     let dataTarget = arrowBtn.getAttribute('data-target');
+  //     let docid = extractDocId(dataTarget);
+  //
+  //     $.ajax({
+  //       url: '/docs/' + docid + '/descendants',
+  //       type: 'GET',
+  //       dataType: 'json',
+  //       success: function(response) {
+  //         console.log(response);
+  //         renderSubRecords(docid,response)
+  //       },
+  //       error: function(error) {
+  //         console.error('Error fetching descendants:', error);
+  //       }
+  //     });
+  //   }
+  // });
   // 초기 렌더링 시에 'Toggle Sub Records' 버튼의 화살표를 '✖'로 설정
   document.querySelectorAll('.toggle-btn').forEach(function (arrowBtn) {
     arrowBtn.innerHTML = '↓';
   });
 
   function toggleArrow(arrowBtn) {
-    var arrow = arrowBtn.innerHTML;
+    let arrow = arrowBtn.innerHTML;
     arrowBtn.innerHTML = arrow === '✖' ? '↓' : '✖';
   }
   function extractDocId(dataTarget) {

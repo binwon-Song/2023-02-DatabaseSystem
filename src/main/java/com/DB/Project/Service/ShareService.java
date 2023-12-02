@@ -1,6 +1,7 @@
 package com.DB.Project.Service;
 
 import com.DB.Project.Entitiy.Doc;
+import com.DB.Project.Entitiy.ShareUser;
 import com.DB.Project.Repository.ShareRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,11 @@ public class ShareService {
 
     public void ShareAdd(Integer userId,String id,String name,String role,Integer docid){
         shareRepository.ShareAdd(userId,id,name,role,docid);
+    }
+
+    public ShareUser getShareUser(Integer docId)
+    {
+        return shareRepository.getShareUserByDocId(docId);
     }
 
     public List<Doc> getSahreDoc(Integer userid)

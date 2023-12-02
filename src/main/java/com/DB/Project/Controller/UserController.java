@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Getter
 @Setter
@@ -50,6 +51,7 @@ public class UserController {
         if (userService.validateUser(id, passwd)) {
             User loginUser = userService.getUserByID(id);
             session.setAttribute(SessionConst.loginUser,loginUser);
+            session.setMaxInactiveInterval(1800);
             return "redirect:/docs";
         } else {
             model.addAttribute("error", "Invalid credentials");
@@ -57,14 +59,29 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public String logout(HttpServletRequest req) {
-        HttpSession session= req.getSession(false);
-        if(session !=null){
-            session.invalidate();
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(HttpServletRequest request, SessionStatus sessionStatus) {
+        // Check if the login user attribute is set
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            User loginMember = (User) session.getAttribute(SessionConst.loginUser);
+
+            if (loginMember != null) {
+                System.out.println("loginMember logout: " + loginMember.getName());
+            }
+
+            // Set the session processing as complete
+            sessionStatus.setComplete();
+
+            // Now trying to access loginMember will result in NullPointerException
+            // System.out.println("loginMember logout: " + loginMember.getName());
         }
+
         return "redirect:/";
     }
+
+
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signup(@ModelAttribute User user,Model model) {
         userService.createUser(user);

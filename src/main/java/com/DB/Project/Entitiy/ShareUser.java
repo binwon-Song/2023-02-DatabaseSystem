@@ -10,7 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShareUser {
+    Integer shareUserPK;
     Integer shareUserId;
     String shareId;
+    String shareName;
+    Integer docID;
     String role;
 }

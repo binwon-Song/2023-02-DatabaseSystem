@@ -36,8 +36,7 @@
       <div class="card-header" th:id="'heading' + ${record.docId}">
         <h5 class="mb-0">
           <!-- 예시 URL 템플릿 -->
-          <a th:href="@{/docs/{id}(id=${record.docId})}" class="btn btn-link text" th:text="${record.header}"></a>
-
+          <a th:href="@{/shares/{id}(id=${record.docId})}" class="btn btn-link text" th:text="${record.header}"></a>
         </h5>
       </div>
 
